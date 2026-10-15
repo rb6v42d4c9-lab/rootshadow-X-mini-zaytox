@@ -1,0 +1,626 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080b11">
+<title>MINI/ZAYTOX — Security Lab</title>
+
+<style>
+:root {
+  --bg: #080b11;
+  --panel: #101521;
+  --border: #26334a;
+  --cyan: #61f0ff;
+  --purple: #c18aff;
+  --muted: #8997ae;
+  --green: #5fffc0;
+  --text: #e4eaf5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(ellipse at top, #111827, var(--bg) 58%);
+  color: var(--text);
+  font-family: monospace;
+  line-height: 1.55;
+}
+
+.wrap {
+  width: min(1180px, 100%);
+  margin: auto;
+  padding: 28px 24px 22px;
+}
+
+header {
+  padding: 22px 4px 28px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 26px;
+}
+
+.eyebrow {
+  color: var(--purple);
+  letter-spacing: .18em;
+  font-size: .85rem;
+}
+
+h1 {
+  font-size: clamp(2rem, 6vw, 3.8rem);
+  line-height: 1.1;
+  margin: 10px 0;
+  color: var(--cyan);
+  letter-spacing: .05em;
+}
+
+.subtitle {
+  color: var(--muted);
+}
+
+.statusline {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  color: var(--green);
+  font-size: .85rem;
+}
+
+.dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 12px #5fffc066;
+}
+
+.modules {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.module {
+  background: linear-gradient(145deg, #131a27, #0d111b);
+  border: 2px solid var(--border);
+  border-radius: 24px;
+  padding: 25px 26px;
+  min-height: 220px;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  transition: .18s;
+  width: 100%;
+  font: inherit;
+}
+
+.module:hover,
+.module:focus-visible {
+  border-color: var(--cyan);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.module.active {
+  border-color: var(--cyan);
+  background: linear-gradient(145deg, #152632, #101521);
+  box-shadow: 0 0 0 1px #61f0ff18 inset;
+}
+
+.module-id {
+  color: var(--purple);
+  font-size: 1rem;
+  margin-bottom: 17px;
+}
+
+.module-title {
+  color: var(--cyan);
+  font-weight: 800;
+  font-size: clamp(1.08rem, 3vw, 1.55rem);
+  line-height: 1.35;
+}
+
+.symbol {
+  margin-right: 10px;
+}
+
+.module-desc {
+  color: var(--muted);
+  font-size: 1.08rem;
+  margin-top: 18px;
+  max-width: 29ch;
+}
+
+.console {
+  border: 2px solid var(--border);
+  border-radius: 25px;
+  overflow: hidden;
+  background: #090d14;
+}
+
+.console-head {
+  padding: 17px 22px;
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.console-title {
+  font-size: 1.05rem;
+}
+
+.ready {
+  color: var(--green);
+  white-space: nowrap;
+}
+
+.console-body {
+  padding: 26px 24px 30px;
+}
+
+label {
+  display: block;
+  color: var(--muted);
+  margin-bottom: 13px;
+}
+
+input {
+  width: 100%;
+  background: #080b11;
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  padding: 17px 18px;
+  color: var(--text);
+  font: inherit;
+  font-size: 1.25rem;
+  outline: none;
+}
+
+input:focus {
+  border-color: var(--cyan);
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+button.action {
+  font: inherit;
+  font-size: 1rem;
+  padding: 14px 20px;
+  border-radius: 13px;
+  border: 2px solid var(--border);
+  background: #151b27;
+  color: var(--text);
+  cursor: pointer;
+}
+
+button.action.primary {
+  background: #132633;
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+button.action:hover {
+  filter: brightness(1.15);
+}
+
+.rule {
+  height: 8px;
+  background: #1b2433;
+  margin: 30px 0 24px;
+}
+
+.output {
+  color: var(--green);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  min-height: 180px;
+  font-size: 1rem;
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  padding: 24px 0 5px;
+  font-size: .9rem;
+  letter-spacing: .04em;
+}
+
+@media (min-width: 850px) {
+  .module {
+    min-height: 225px;
+  }
+
+  .wrap {
+    padding-top: 40px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .modules {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .module {
+    min-height: 240px;
+  }
+}
+
+@media (max-width: 520px) {
+  .wrap {
+    padding: 18px 16px;
+  }
+
+  .modules {
+    gap: 12px;
+  }
+
+  .module {
+    padding: 20px 17px;
+    min-height: 200px;
+    border-radius: 20px;
+  }
+
+  .module-desc {
+    font-size: .96rem;
+  }
+
+  .console-body {
+    padding: 22px 18px;
+  }
+
+  .module-title {
+    font-size: 1rem;
+  }
+
+  .module-id {
+    font-size: .85rem;
+  }
+
+  input {
+    font-size: 1.05rem;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">LOCAL SECURITY INTERFACE // V1.0</div>
+
+  <h1>MINI/ZAYTOX</h1>
+
+  <div class="subtitle">SECURITY LAB</div>
+
+  <div class="statusline">
+    <span class="dot"></span>
+    SYSTÈME PRÊT
+    <span style="color:var(--muted)">/</span>
+    <span>7 MODULES DISPONIBLES</span>
+  </div>
+</header>
+
+<main>
+<section class="modules" aria-label="Modules">
+
+<button class="module" data-module="identity" aria-pressed="false">
+  <div class="module-id">MODULE_01</div>
+  <div class="module-title">
+    <span class="symbol">◇</span>IDENTITY MATRIX
+  </div>
+  <div class="module-desc">
+    Gestion des fiches et références.
+  </div>
+</button>
+
+<button class="module" data-module="network" aria-pressed="false">
+  <div class="module-id">MODULE_02</div>
+  <div class="module-title">
+    <span class="symbol">⌁</span>NETWORK PULSE
+  </div>
+  <div class="module-desc">
+    Tableau des paramètres réseau.
+  </div>
+</button>
+
+<button class="module" data-module="cipher" aria-pressed="false">
+  <div class="module-id">MODULE_03</div>
+  <div class="module-title">
+    <span class="symbol">⬡</span>CIPHER FORGE
+  </div>
+  <div class="module-desc">
+    Génération de chaînes hexadécimales.
+  </div>
+</button>
+
+<button class="module" data-module="signal" aria-pressed="false">
+  <div class="module-id">MODULE_04</div>
+  <div class="module-title">
+    <span class="symbol">⌘</span>SIGNAL DECK
+  </div>
+  <div class="module-desc">
+    Visualisation des événements.
+  </div>
+</button>
+
+<button class="module" data-module="watchtower" aria-pressed="false">
+  <div class="module-id">MODULE_05</div>
+  <div class="module-title">
+    <span class="symbol">◉</span>WATCHTOWER
+  </div>
+  <div class="module-desc">
+    Checklist des paramètres de sécurité.
+  </div>
+</button>
+
+<button class="module" data-module="atlas" aria-pressed="false">
+  <div class="module-id">MODULE_06</div>
+  <div class="module-title">
+    <span class="symbol">✧</span>DIGITAL ATLAS
+  </div>
+  <div class="module-desc">
+    Organisation des informations.
+  </div>
+</button>
+
+<button class="module" data-module="random" aria-pressed="false">
+  <div class="module-id">MODULE_07</div>
+  <div class="module-title">
+    <span class="symbol">△</span>RANDOM FORGE
+  </div>
+  <div class="module-desc">
+    Création de références aléatoires.
+  </div>
+</button>
+
+</section>
+
+<section class="console" aria-label="Console">
+
+  <div class="console-head">
+    <span class="console-title">MINI/ZAYTOX://CONSOLE</span>
+    <span class="ready"><span class="dot"></span> &nbsp;READY</span>
+  </div>
+
+  <div class="console-body">
+
+    <label for="project">ENTRÉE / NOM DU PROJET</label>
+
+    <input
+      id="project"
+      type="text"
+      placeholder="Saisir une valeur..."
+      autocomplete="off"
+      maxlength="80"
+    >
+
+    <div class="actions">
+      <button class="action primary" id="run">▶ EXÉCUTER</button>
+      <button class="action" id="clear">EFFACER</button>
+    </div>
+
+    <div class="rule"></div>
+
+    <div id="output" class="output" aria-live="polite">MINI/ZAYTOX TOOLS v1.0
+
+Bienvenue dans la console.
+Sélectionne un module pour commencer.
+
+[READY] En attente d'une commande...</div>
+
+  </div>
+</section>
+</main>
+
+<footer>MINI/ZAYTOX © DIGITAL LAB</footer>
+
+</div>
+
+<script>
+const modules = {
+  identity: {
+    name: "IDENTITY MATRIX",
+    intro: "Initialisation de la matrice d'identité...",
+    lines: [
+      "[+] Fiche projet créée",
+      "[+] Référence locale générée",
+      "[+] État : ENREGISTRÉ"
+    ]
+  },
+
+  network: {
+    name: "NETWORK PULSE",
+    intro: "Analyse des paramètres réseau...",
+    lines: [
+      "[+] Interface : locale",
+      "[+] État réseau : NON TESTÉ",
+      "[+] Aucune connexion distante"
+    ]
+  },
+
+  cipher: {
+    name: "CIPHER FORGE",
+    intro: "Génération de références hexadécimales...",
+    lines: [
+      "[+] HASH",
+      "[+] CLÉ DE TEST",
+      "[+] CHECKSUM"
+    ]
+  },
+
+  signal: {
+    name: "SIGNAL DECK",
+    intro: "Chargement du journal d'événements...",
+    lines: [
+      "[EVENT 001] Console initialisée",
+      "[EVENT 002] Module sélectionné",
+      "[EVENT 003] Rapport local généré"
+    ]
+  },
+
+  watchtower: {
+    name: "WATCHTOWER",
+    intro: "Checklist de sécurité...",
+    lines: [
+      "[PASS] Validation des entrées",
+      "[PASS] Configuration locale",
+      "[WARN] Vérifier les paramètres",
+      "[PASS] Vérification terminée"
+    ]
+  },
+
+  atlas: {
+    name: "DIGITAL ATLAS",
+    intro: "Organisation des informations du projet...",
+    lines: [
+      "[+] Catégorie : PROJET",
+      "[+] Référence : locale",
+      "[+] Index : généré"
+    ]
+  },
+
+  random: {
+    name: "RANDOM FORGE",
+    intro: "Création de références aléatoires...",
+    lines: [
+      "[+] ID",
+      "[+] TOKEN",
+      "[+] RÉFÉRENCE"
+    ]
+  }
+};
+
+let selected = null;
+
+const output = document.getElementById("output");
+const project = document.getElementById("project");
+
+function randHex(n = 24) {
+  const chars = "0123456789ABCDEF";
+  let result = "";
+
+  for (let i = 0; i < n; i++) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+
+  return result;
+}
+
+function randId(n = 12) {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let result = "";
+
+  for (let i = 0; i < n; i++) {
+    result += chars[Math.floor(Math.random() * chars.length)];
+  }
+
+  return result;
+}
+
+document.querySelectorAll(".module").forEach(card => {
+  card.addEventListener("click", () => {
+    selected = card.dataset.module;
+
+    document.querySelectorAll(".module").forEach(item => {
+      const active = item === card;
+
+      item.classList.toggle("active", active);
+      item.setAttribute("aria-pressed", String(active));
+    });
+
+    output.textContent =
+      `[MODULE CHARGÉ] ${modules[selected].name}\n\n` +
+      `${modules[selected].intro}\n\n` +
+      "[READY] Saisis le nom du projet puis appuie sur EXÉCUTER.";
+  });
+});
+
+document.getElementById("run").addEventListener("click", () => {
+  if (!selected) {
+    output.textContent =
+      "[INFO] Sélectionne d'abord un module.\n\n" +
+      "[READY] En attente d'une commande...";
+    return;
+  }
+
+  const module = modules[selected];
+  const target = project.value.trim() || "PROJET_SANS_NOM";
+
+  const lines = module.lines.map(line => {
+    if (line === "[+] HASH") {
+      return `[+] HASH       : ${randHex(32)}`;
+    }
+
+    if (line === "[+] CLÉ DE TEST") {
+      return `[+] CLÉ DE TEST : ${randId(16)}`;
+    }
+
+    if (line === "[+] CHECKSUM") {
+      return `[+] CHECKSUM    : ${randHex(16)}`;
+    }
+
+    if (line === "[+] ID") {
+      return `[+] ID          : ${randId(12)}`;
+    }
+
+    if (line === "[+] TOKEN") {
+      return `[+] TOKEN       : ${randHex(24)}`;
+    }
+
+    if (line === "[+] RÉFÉRENCE") {
+      return `[+] RÉFÉRENCE   : REF-${randId(10)}`;
+    }
+
+    return line;
+  });
+
+  output.textContent =
+    `MINI/ZAYTOX TOOLS v1.0\n\n` +
+    `[MODULE] ${module.name}\n` +
+    `[PROJET] ${target}\n\n` +
+    `${module.intro}\n\n` +
+    `${lines.join("\n")}\n\n` +
+    "[READY] Opération terminée.";
+});
+
+document.getElementById("clear").addEventListener("click", () => {
+  project.value = "";
+  selected = null;
+
+  document.querySelectorAll(".module").forEach(card => {
+    card.classList.remove("active");
+    card.setAttribute("aria-pressed", "false");
+  });
+
+  output.textContent =
+    "MINI/ZAYTOX TOOLS v1.0\n\n" +
+    "Console effacée.\n" +
+    "Sélectionne un module pour commencer.\n\n" +
+    "[READY] En attente d'une commande...";
+});
+
+project.addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    document.getElementById("run").click();
+  }
+});
+</script>
+
+</body>
+</html>
